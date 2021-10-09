@@ -1,0 +1,41 @@
+version: 1
+env:
+  variables:
+      api_url_prod: "https://api.starltoken.com"
+      api_url_dev: "https://dev-api.starltoken.com"
+
+      network_prod: "mainnet"
+      network_dev: "testnet"
+
+      subgraph_url_prod: "https://api.thegraph.com/subgraphs/name/lclement927/starlink_mainnet"
+      subgraph_url_dev: "https://api.thegraph.com/subgraphs/name/lclement927/starlink" 
+
+      market_url_prod: "https://market.starltoken.com"
+      market_url_dev: "https://dev-market.starltoken.com"
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - export NODE_OPTIONS=--max-old-space-size=8192
+        - yarn install --ignore-engines
+    build:
+      commands:
+        - yarn run build
+        - if [ "${AWS_BRANCH}" = "main" ]; then export API_URL=${api_url_prod}; fi
+        - if [ "${AWS_BRANCH}" = "dev" ]; then export API_URL=${api_url_dev}; fi
+
+        - if [ "${AWS_BRANCH}" = "main" ]; then export NETWORK=${network_prod}; fi
+        - if [ "${AWS_BRANCH}" = "dev" ]; then export NETWORK=${network_dev}; fi
+
+        - if [ "${AWS_BRANCH}" = "main" ]; then export SUBGRAPH_URL=${subgraph_url_prod}; fi
+        - if [ "${AWS_BRANCH}" = "dev" ]; then export SUBGRAPH_URL=${subgraph_url_dev}; fi
+
+        - if [ "${AWS_BRANCH}" = "main" ]; then export MARKET_URL=${market_url_prod}; fi
+        - if [ "${AWS_BRANCH}" = "dev" ]; then export MARKET_URL=${market_url_dev}; fi
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*

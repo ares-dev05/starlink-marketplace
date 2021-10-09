@@ -1,0 +1,8 @@
+.next
+node_modules
+out
+yarn-error.log
+dummy.js
+.env
+.env.local
+.next.config.js
